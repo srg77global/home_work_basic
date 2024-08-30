@@ -30,7 +30,7 @@ func ReadJSON(filePath string) ([]types.Employee, error) {
 		return nil, err
 	}
 
-	//res := data
+	// res := data
 
 	return data, nil
 }
