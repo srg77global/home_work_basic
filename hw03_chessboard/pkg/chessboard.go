@@ -2,24 +2,31 @@ package pkg
 
 import "fmt"
 
+var Row = 0
+
 func CreatingBoard(size int) {
-	for row := 0; row < size; row++ {
-		if row%2 == 0 {
+	for Row < size {
+		if Row%2 == 0 {
 			fmt.Print("#")
 		}
-		for cell := 1; cell <= size; cell++ {
-			switch {
-			case cell%2 == 0 && cell != size:
-				fmt.Print("#")
-			case cell%2 != 0 && cell != size:
-				fmt.Print(" ")
-			case cell%2 == 0 && cell == size && row%2 != 0:
-				fmt.Printf("#\n")
-			case cell%2 == 0 && cell == size && row%2 == 0:
-				fmt.Printf("\n")
-			case cell%2 != 0 && cell == size:
-				fmt.Printf("\n")
-			}
+		Cells(size)
+		Row++
+	}
+}
+
+func Cells(size int) {
+	for cell := 1; cell <= size; cell++ {
+		switch {
+		case cell%2 == 0 && cell != size:
+			fmt.Print("#")
+		case cell%2 != 0 && cell != size:
+			fmt.Print(" ")
+		case cell%2 == 0 && cell == size && Row%2 != 0:
+			fmt.Printf("#\n")
+		case cell%2 == 0 && cell == size && Row%2 == 0:
+			fmt.Printf("\n")
+		case cell%2 != 0 && cell == size:
+			fmt.Printf("\n")
 		}
 	}
 }
