@@ -26,7 +26,7 @@ func Cells(size int) {
 		case cell%2 == 0 && cell == size && Row%2 == 0:
 			fmt.Printf("\n")
 		case cell%2 != 0 && cell == size:
-			fmt.Printf("\n")
+			fmt.Printf(" \n")
 		}
 	}
 }
