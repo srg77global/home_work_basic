@@ -16,11 +16,11 @@ func main() {
 			case a%2 == 0 && b%2 == 0:
 				fmt.Print("#")
 			case a%2 == 0 && b%2 != 0:
-				fmt.Print("1")
+				fmt.Print(" ")
 			case a%2 != 0 && b%2 != 0:
 				fmt.Print("#")
 			case a%2 != 0 && b%2 == 0:
-				fmt.Print("1")
+				fmt.Print(" ")
 			}
 		}
 		fmt.Printf("\n")
