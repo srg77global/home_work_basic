@@ -1,10 +1,6 @@
 package main
 
-import (
-	"fmt"
-
-	"github.com/srg77global/home_work_basic/hw03_chessboard/pkg"
-)
+import "fmt"
 
 func main() {
 	var size int
@@ -14,5 +10,19 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	pkg.CreatingBoard(size)
+	for b := 1; b <= size; b++ {
+		for a := 1; a <= size; a++ {
+			switch {
+			case a%2 == 0 && b%2 == 0:
+				fmt.Print("#")
+			case a%2 == 0 && b%2 != 0:
+				fmt.Print("1")
+			case a%2 != 0 && b%2 != 0:
+				fmt.Print("#")
+			case a%2 != 0 && b%2 == 0:
+				fmt.Print("1")
+			}
+		}
+		fmt.Printf("\n")
+	}
 }
