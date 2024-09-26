@@ -1,112 +1,129 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 type Book struct {
-	id     []int
-	title  []string
-	author []string
-	year   []int
-	size   []int
-	rate   []float32
+	id     int
+	title  string
+	author string
+	year   int
+	size   int
+	rate   float32
 }
 
-type Sets interface {
-	writeID(x int)
-	writeTitle(x string)
-	writeAuthor(x string)
-	writeYear(x int)
-	writeSize(x int)
-	writeRate(x float32)
+func (s *Book) WriteID(x int) {
+	s.id = x
 }
 
-type Gets interface {
-	getID()
-	getTitle()
-	getAuthor()
-	getYear()
-	getSize()
-	getRate()
+func (s *Book) WriteTitle(x string) {
+	s.title = x
 }
 
-func (s *Book) writeID(x int) {
-	s.id = append(s.id, x)
+func (s *Book) WriteAuthor(x string) {
+	s.author = x
 }
 
-func (s *Book) writeTitle(x string) {
-	s.title = append(s.title, x)
+func (s *Book) WriteYear(x int) {
+	s.year = x
 }
 
-func (s *Book) writeAuthor(x string) {
-	s.author = append(s.author, x)
+func (s *Book) WriteSize(x int) {
+	s.size = x
 }
 
-func (s *Book) writeYear(x int) {
-	s.year = append(s.year, x)
+func (s *Book) WriteRate(x float32) {
+	s.rate = x
 }
 
-func (s *Book) writeSize(x int) {
-	s.size = append(s.size, x)
-}
-
-func (s *Book) writeRate(x float32) {
-	s.rate = append(s.rate, x)
-}
-
-func (s *Book) getID() []int {
+func (s *Book) GetID() int {
 	return s.id
 }
 
-func (s *Book) getTitle() []string {
+func (s *Book) GetTitle() string {
 	return s.title
 }
 
-func (s *Book) getAuthor() []string {
+func (s *Book) GetAuthor() string {
 	return s.author
 }
 
-func (s *Book) getYear() []int {
+func (s *Book) GetYear() int {
 	return s.year
 }
 
-func (s *Book) getSize() []int {
+func (s *Book) GetSize() int {
 	return s.size
 }
 
-func (s *Book) getRate() []float32 {
+func (s *Book) GetRate() float32 {
 	return s.rate
 }
 
-func (s Book) Comparator(enum int) func(Book) bool {
-	switch enum {
+type CBooks struct {
+	enum int
+}
+
+func (s CBooks) Comparator(a, b Book) bool {
+	switch s.enum {
 	case 1:
-		return func(a Book) bool {
-			return a.year[0] > a.year[1]
-		}
+		return a.year > b.year
 	case 2:
-		return func(a Book) bool {
-			return a.size[0] > a.size[1]
-		}
+		return a.size > b.size
+	case 3:
+		return a.rate > b.rate
 	default:
-		return func(a Book) bool {
-			return a.rate[0] > a.rate[1]
-		}
+		return false
 	}
 }
 
 func main() {
+	FirstBook := Book{
+		id:     1,
+		title:  "Title1",
+		author: "Author1",
+		year:   2024,
+		size:   999,
+		rate:   9.9,
+	}
+	SecondBook := Book{
+		id:     2,
+		title:  "Title2",
+		author: "Author2",
+		year:   2020,
+		size:   111,
+		rate:   1.1,
+	}
+	ComparableBook := CBooks{1}
+	fmt.Println(
+		ComparableBook.Comparator(FirstBook, SecondBook))
+}
+
+/* func (s Comp) Comparator(enum int) func(Comp, Comp) bool {
+	switch enum {
+	case 1:
+		return func(a, b Comp) bool {
+			return a.year > b.year
+		}
+	case 2:
+		return func(a, b Comp) bool {
+			return a.size > b.size
+		}
+	default:
+		return func(a, b Comp) bool {
+			return a.rate > b.rate
+		}
+	}
+}
 	var choose int
 	var r float32
 	var strings string
 	books := Book{
-		id:     []int{1},
-		title:  []string{"Stories of Columb"},
-		author: []string{"John Block"},
-		year:   []int{2020},
-		size:   []int{293},
-		rate:   []float32{6.7},
+		id = 1,
+		title = "Stories of Columb",
+		author = "John Block",
+		year = 2020,
+		size = 293,
+		rate = 6.7,
 	}
 
 START:
@@ -219,4 +236,4 @@ START:
 
 		goto START
 	}
-}
+*/
