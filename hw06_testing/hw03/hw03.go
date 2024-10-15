@@ -1,6 +1,4 @@
-package main
-
-import "fmt"
+package hw03
 
 func createChessboard(size int) string {
 	var str string
@@ -20,16 +18,4 @@ func createChessboard(size int) string {
 		str += "\n"
 	}
 	return str
-}
-
-func main() {
-	var size int
-	fmt.Printf("Enter the size for the chessboard:")
-	_, err := fmt.Scanf("%d", &size)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	fmt.Println(createChessboard(size))
 }
