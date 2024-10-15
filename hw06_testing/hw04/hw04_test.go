@@ -340,6 +340,7 @@ func TestComparator(t *testing.T) {
 			book2: Book{},
 			res:   false,
 		},
+<<<<<<< HEAD
 		{
 			desc:  "NotCorrectFieldToCompare",
 			enum:  10,
@@ -347,6 +348,8 @@ func TestComparator(t *testing.T) {
 			book2: Book{year: 1999, size: 700, rate: 12.3},
 			res:   false,
 		},
+=======
+>>>>>>> 6a2343f (hw06_testing)
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
