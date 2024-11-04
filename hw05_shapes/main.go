@@ -35,11 +35,13 @@ func (t *Triangle) CalcArea() float64 {
 
 func calculateArea(s any) (float64, error) {
 	if ss, ok := s.(Shape); ok {
-		return ss.CalcArea(), nil
+		if ss.CalcArea() >= 0 {
+			return ss.CalcArea(), nil
+		}
+		return 0, fmt.Errorf("ошибка: CalcArea() = %f/n", ss.CalcArea())
 	}
 	return 0, fmt.Errorf("ошибка: переданный объект не является фигурой")
 }
-
 func main() {
 	a := &Circle{R: 5}
 	b := &Rectangle{A: 10, B: 5}
