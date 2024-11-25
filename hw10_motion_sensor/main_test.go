@@ -2,6 +2,7 @@ package main
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 )
@@ -9,35 +10,31 @@ import (
 func TestInput(t *testing.T) {
 	testCases := []struct {
 		desc string
-		data []int
+		data int
+		res  int
 	}{
 		{
 			desc: "Positive1",
-			data: []int{2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+			data: 2,
+			res:  2,
 		},
 		{
 			desc: "Positive2",
-			data: []int{10, 20, 30, 40, 50, 60, 70, 80, 90, 100},
+			data: 5235236,
+			res:  5235236,
 		},
 		{
 			desc: "BorderCase",
-			data: []int{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			data: 0,
+			res:  0,
 		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
-			chInput := make(chan int, 100)
-			chStop := make(chan struct{}, 1)
-			chInputSlice := make([]int, 0)
-
-			Input(chInput, tC.data, chStop)
-
-			for i := 0; i < len(tC.data); i++ {
-				nums := <-chInput
-				chInputSlice = append(chInputSlice, nums)
-			}
-
-			require.Equal(t, tC.data, chInputSlice)
+			cInput := make(chan int, 100)
+			Input := ConstrInput(time.Second)
+			Input(cInput, tC.data)
+			require.Equal(t, tC.res, <-cInput)
 		})
 	}
 }
@@ -73,17 +70,15 @@ func TestOutput(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			chInput := make(chan int, 100)
 			chOutput := make(chan int, 100)
-			chStop1 := make(chan struct{}, 1)
-			chStop2 := make(chan struct{}, 1)
+			chStop := make(chan struct{}, 1)
 
 			for _, nums := range tC.data {
 				chInput <- nums
 			}
+			close(chInput)
 
-			Output(chInput, chOutput, chStop1, chStop2)
-
+			Output(chInput, chOutput, chStop)
 			res := <-chOutput
-
 			require.Equal(t, tC.exp, res)
 		})
 	}
