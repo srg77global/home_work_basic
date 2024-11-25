@@ -34,6 +34,7 @@ func Test(t *testing.T) {
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
+			wg.Add(3)
 			Counter(&tC.v, tC.i)
 			require.Equal(t, tC.res, tC.v)
 		})

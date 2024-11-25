@@ -13,7 +13,6 @@ var (
 )
 
 func Counter(arg *int, i int) {
-	wg.Add(1)
 	defer wg.Done()
 	mu.Lock()
 	*arg++
@@ -24,6 +23,7 @@ func Counter(arg *int, i int) {
 func main() {
 	var val int
 
+	wg.Add(10_000)
 	for i := 0; i < 10_000; i++ {
 		go Counter(&val, i)
 	}
