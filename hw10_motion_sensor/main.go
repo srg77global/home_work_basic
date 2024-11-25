@@ -5,16 +5,18 @@ import (
 	"time"
 )
 
-func Input(cInput chan<- int, data int) {
-	timeout := time.After(time.Second)
-	for {
-		select {
-		case cInput <- data:
-			fmt.Println("[goroutine 1] first case executed")
-		case <-timeout:
-			fmt.Println("[goroutine 1] second case executed")
-			close(cInput)
-			return
+func ConstrInput(clock time.Duration) func(cInput chan<- int, data int) {
+	return func(cInput chan<- int, data int) {
+		timeout := time.After(clock)
+		for {
+			select {
+			case cInput <- data:
+				fmt.Println("[goroutine 1] first case executed")
+			case <-timeout:
+				fmt.Println("[goroutine 1] second case executed")
+				close(cInput)
+				return
+			}
 		}
 	}
 }
@@ -52,6 +54,8 @@ func main() {
 	dataV := 523
 
 	fmt.Println("[main] variables created")
+
+	Input := ConstrInput(time.Minute)
 
 	go Input(cInput, dataV)
 	go Output(cInput, cOutput, cStop)

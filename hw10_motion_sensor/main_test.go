@@ -2,6 +2,7 @@ package main
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 )
@@ -31,6 +32,7 @@ func TestInput(t *testing.T) {
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
 			cInput := make(chan int, 100)
+			Input := ConstrInput(time.Second)
 			Input(cInput, tC.data)
 			require.Equal(t, tC.res, <-cInput)
 		})
