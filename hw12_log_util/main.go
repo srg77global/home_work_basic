@@ -15,13 +15,14 @@ func main() {
 		level   string
 		output  string
 	)
+	const empty = "empty"
 
-	flag.StringVar(&logFile, "file", "empty", "log file for analysis")
+	flag.StringVar(&logFile, "file", empty, "log file for analysis")
 	flag.StringVar(&level, "level", `"info"`, "log level for analysis")
-	flag.StringVar(&output, "output", "log_analysis.csv", "path of file with the statistic")
+	flag.StringVar(&output, "output", empty, "path of file with the statistic")
 	flag.Parse()
 
-	if logFile == "empty" {
+	if logFile == empty {
 		logFile, ok = os.LookupEnv("LOG_ANALYZER_FILE")
 		if !ok {
 			fmt.Println("uncorrected path for the log file")
@@ -34,10 +35,10 @@ func main() {
 			fmt.Println(`using the standart log level "info"`)
 		}
 	}
-	if output == "log_analysis.csv" {
+	if output == empty {
 		output, ok = os.LookupEnv("LOG_ANALYZER_OUTPUT")
 		if !ok {
-			output = "log_analysis.csv"
+			output = empty
 		}
 	}
 
@@ -57,7 +58,7 @@ func main() {
 
 	file.Close()
 
-	if output == `"empty"` || output == "" {
+	if output == empty {
 		fmt.Println(result)
 		return
 	}
@@ -73,14 +74,13 @@ func main() {
 	}
 
 	fileWritten.Close()
-
 }
 
 func csvRead(file *os.File) ([][]string, error) {
 	csvFile := csv.NewReader(file)
 	buffer, err := csvFile.ReadAll()
 	if err != nil {
-		err = fmt.Errorf("error csvFile.ReadAll: %v", err)
+		err = fmt.Errorf("error csvFile.ReadAll: %w", err)
 		return nil, err
 	}
 	return buffer, nil
@@ -141,9 +141,9 @@ func csvMonth(str string, buffer [][]string, logFile string) string {
 	}
 
 	if logFile == "log_2024.csv" {
-		date = date + ".2024"
+		date += ".2024"
 	} else if logFile == "log_2023.csv" {
-		date = date + ".2023"
+		date += ".2023"
 	}
 
 	for _, args := range buffer {
