@@ -1,0 +1,20 @@
+01.2023, error, file not found
+02.2023, , succeed opening
+02.2023, error, file is empty
+03.2023, , succeed opening
+04.2023, , succeed opening
+04.2023, error, file is empty
+04.2023, error, file not found
+05.2023, , succeed opening
+06.2023, error, file not found
+06.2023, error, file is empty
+07.2023, error, file is empty
+08.2023, error, file is empty
+09.2023, error, file not found
+09.2023, error, file is empty
+09.2023, , succeed opening
+10.2023, error, file not found
+11.2023, error, file is empty
+11.2023, , succeed opening
+12.2023, error, file not found
+12.2023, error, file is empty
