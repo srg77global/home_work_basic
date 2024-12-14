@@ -38,7 +38,10 @@ func handleGet(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(body)
+	_, err = w.Write(body)
+	if err != nil {
+		fmt.Println("Writing error: ", err)
+	}
 }
 
 func handlePost(w http.ResponseWriter, r *http.Request) {
