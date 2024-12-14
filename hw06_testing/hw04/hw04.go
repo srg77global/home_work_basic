@@ -1,6 +1,4 @@
-package main
-
-import "fmt"
+package hw04
 
 type Book struct {
 	id     uint32
@@ -84,25 +82,4 @@ func (s CBooks) Comparator(a, b Book) bool {
 
 func createStruct(x uint8) *CBooks {
 	return &CBooks{enum: x}
-}
-
-func main() {
-	Book1 := Book{
-		id:     1,
-		title:  "Title1",
-		author: "Author1",
-		year:   1990,
-		size:   777,
-		rate:   4.5,
-	}
-	Book2 := Book{
-		id:     2,
-		title:  "Title1",
-		author: "Author2",
-		year:   2014,
-		size:   555,
-		rate:   5.3,
-	}
-	BookS := createStruct(rate)
-	fmt.Println(BookS.Comparator(Book1, Book2))
 }
