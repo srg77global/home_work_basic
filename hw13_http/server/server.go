@@ -19,22 +19,22 @@ func handleGet(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
-
+	fmt.Printf("%+v", &r)
 	fmt.Printf("Method: %v\n", r.Method)
 
-	User := User{
+	oldUser := User{
 		Name:    "Iva",
 		Surname: "Inov",
 		Age:     30,
 	}
 
-	body, err := json.Marshal(User)
+	body, err := json.Marshal(oldUser)
 	if err != nil {
 		fmt.Println("Error Marshalling: ", err)
 		return
 	}
 
-	fmt.Printf("%+v\n", User)
+	fmt.Printf("%+v\n", oldUser)
 
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
@@ -75,7 +75,7 @@ func main() {
 
 	http.HandleFunc("/get_user", handleGet)
 	http.HandleFunc("/post_user", handlePost)
-	err := http.ListenAndServe(*url+":"+*port, nil)
+	err := http.ListenAndServe(*url+":"+*port, nil) //nolint
 	if err != nil {
 		fmt.Println("Error of starting Server: ", err)
 		return

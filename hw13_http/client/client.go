@@ -25,13 +25,15 @@ func (u *User) String() string {
 
 func main() {
 	url := flag.String("url", "127.0.0.1:9090", "URL for request.")
-	path := flag.String("path", "get_user", `path of resourse: "get_user" or "post_user"`)
+	path := flag.String("path", "get_user", `path of resource: "get_user" or "post_user"`)
 	flag.Parse()
+
+	urlStr := "http://" + *url + "/" + *path
 
 	switch *path {
 	case "get_user":
 
-		conn, err := http.Get("http://" + *url + "/" + *path)
+		conn, err := http.Get(urlStr) //nolint
 		if err != nil {
 			fmt.Println("Error connection with Method GET: ", err)
 			return
@@ -67,7 +69,7 @@ func main() {
 			Age:     22,
 		}
 
-		conn, err := http.Post("http://"+*url+"/"+*path, "encording/json", bytes.NewBufferString(newUser.String()))
+		conn, err := http.Post(urlStr, "encording/json", bytes.NewBufferString(newUser.String())) //nolint
 		if err != nil {
 			fmt.Println("Error connection with Method POST: ", err)
 			return
