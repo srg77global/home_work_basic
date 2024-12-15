@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/srg77global/home_work_basic/hw09_serialize/proto"
+	"google.golang.org/protobuf/proto"
+
+	protoHw09 "github.com/srg77global/home_work_basic/hw09_serialize/proto"
 )
 
 type Book struct {
@@ -28,7 +30,7 @@ func (b *Book) UnmarshalJSON(data []byte) error {
 }
 
 func main() {
-	book := &proto.BookProto{
+	book := &protoHw09.BookProto{
 		ID:     1,
 		Title:  "title",
 		Author: "author",
@@ -37,21 +39,19 @@ func main() {
 		Rate:   7.3,
 	}
 
-	bookJSON, err := json.Marshal(book)
+	bookJSON, err := proto.Marshal(book)
 	if err != nil {
 		log.Println("Error of Marshaling: ", err)
 		return
 	}
 
-	fmt.Println(string(bookJSON))
+	newBook := protoHw09.BookProto{}
 
-	newBook := &proto.BookProto{}
-
-	err = json.Unmarshal(bookJSON, &newBook)
+	err = proto.Unmarshal(bookJSON, &newBook)
 	if err != nil {
 		log.Println("Error of Unmarshaling: ", err)
 		return
 	}
 
-	fmt.Printf("%+v\n", newBook)
+	fmt.Printf("ID: %v\nTitle: %v\nAuthor: %v\nYear: %v\nSize: %v\nRate: %v\n", newBook.ID, newBook.Title, newBook.Author, newBook.Year, newBook.Size, newBook.Rate)
 }
