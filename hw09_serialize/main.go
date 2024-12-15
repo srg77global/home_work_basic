@@ -45,13 +45,13 @@ func main() {
 		return
 	}
 
-	newBook := protoHw09.BookProto{}
+	newBook := &protoHw09.BookProto{}
 
-	err = proto.Unmarshal(bookJSON, &newBook)
+	err = proto.Unmarshal(bookJSON, newBook)
 	if err != nil {
 		log.Println("Error of Unmarshaling: ", err)
 		return
 	}
 
-	fmt.Printf("ID: %v\nTitle: %v\nAuthor: %v\nYear: %v\nSize: %v\nRate: %v\n", newBook.ID, newBook.Title, newBook.Author, newBook.Year, newBook.Size, newBook.Rate)
+	fmt.Printf("ID: %v\nTitle: %v\nAuthor: %v\nYear: %v\nSize: %v\nRate: %v\n", newBook.GetID(), newBook.GetTitle(), newBook.GetAuthor(), newBook.GetYear(), newBook.GetSize(), newBook.GetRate())
 }
