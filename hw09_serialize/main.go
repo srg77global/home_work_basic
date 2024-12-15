@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 
-	"google.golang.org/protobuf/proto"
+	"github.com/srg77global/home_work_basic/hw09_serialize/proto"
 )
 
 type Book struct {
@@ -16,35 +18,40 @@ type Book struct {
 }
 
 func (b *Book) MarshalJSON() ([]byte, error) {
-	MByte := []byte("1")
-	return MByte, nil
+	bJSON, err := json.Marshal(b)
+	return bJSON, err
 }
 
 func (b *Book) UnmarshalJSON(data []byte) error {
-	return nil
+	err := json.Unmarshal(data, b)
+	return err
 }
 
 func main() {
-	BookM := &SBook{
+	book := &proto.BookProto{
 		ID:     1,
-		Title:  "Title1",
-		Author: "Author1",
-		Year:   1999,
-		Size:   123,
-		Rate:   5.8,
+		Title:  "title",
+		Author: "author",
+		Year:   1990,
+		Size:   456,
+		Rate:   7.3,
 	}
 
-	j, err := proto.Marshal(BookM)
+	bookJSON, err := json.Marshal(book)
 	if err != nil {
-		fmt.Println(err)
+		log.Println("Error of Marshaling: ", err)
+		return
 	}
-	fmt.Printf("%s\n", j)
 
-	var BookU SBook
+	fmt.Println(string(bookJSON))
 
-	err = proto.Unmarshal(j, &BookU)
+	newBook := &proto.BookProto{}
+
+	err = json.Unmarshal(bookJSON, &newBook)
 	if err != nil {
-		fmt.Println(err)
+		log.Println("Error of Unmarshaling: ", err)
+		return
 	}
-	fmt.Printf("%s\n", j)
+
+	fmt.Printf("%+v\n", newBook)
 }
