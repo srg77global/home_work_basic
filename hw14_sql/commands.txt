@@ -1,0 +1,126 @@
+create schema online_shop;
+
+set search_path to online_shop;
+
+// 1
+
+create table Users 
+(
+Id serial primary key,
+Name varchar(30),
+Email varchar(30),
+Password varchar(30)
+);
+
+// 2
+create table Orders
+(
+Id serial primary key,
+User_id integer references Users(id),
+Order_date date,
+Total_amount numeric
+);
+
+// 3
+create table Products
+(
+Id serial primary key,
+Name varchar(30),
+Price numeric
+);
+
+// 4
+create table OrderProducts
+(
+Order_id integer references Orders(id),
+Product_id integer references Products(id)
+);
+
+
+// 5
+insert into Users (name, email, password)
+values
+('Anton', 'hunter007@mail.mail', 'qwerty1'),
+('Roman', 'banker55@mail.mail', 'roma1999'),
+('Sergey', 's555@mail.mail', '12345'),
+('Alexey', 'alexqwerty@mail.mail', 'www123');
+
+insert into Products (name, price)
+values
+('apple', 160000),
+('samsung', 145000),
+('xiaomi', 34000),
+('HTC', 56500);
+
+
+update Users
+set name='Roma'
+where name='Roman';
+
+update Products
+set price=161000
+where name='Apple';
+
+
+delete from Users
+where name='Roma';
+
+delete from Products
+where name='HTC';
+
+// 6
+insert into Orders (user_id, order_date,total_amount)
+values
+(
+(select id from users where id=1),
+'2024-10-21',
+161000
+),
+(
+(select id from users where name='Sergey'),
+'2024-07-11',
+34000
+),
+(
+(select id from users where id=4),
+'2024-09-27',
+34000
+);
+
+insert into orderproducts
+values
+(1, 1),
+(2, 3),
+(3, 3);
+
+delete from orders
+where id=2;
+
+delete from orderproducts
+where order_id = 2;
+
+
+// 7
+select * from Users
+where id=3 OR id=4;
+
+select name from Products
+where price > 100000 and price < 150000;
+
+
+// 8
+select U.name as user_name, O.order_date, O.total_amount
+from Orders O, Users U
+where O.user_id = U.id and U.name='Anton';
+
+
+// 9
+select u.name, o.total_amount / p.price as units_bought
+from users u, orders o, products p, orderproducts op
+where u.id = o.user_id and o.id = op.order_id and p.id = op.product_id;
+
+
+// 10
+create index idx_users_id_name on users (id, name);
+create index idx_orders_userId_totalAmount_orderDate on orders (user_id, total_amount, order_date);
+create index idx_orderproducts_orderId_productId on orderproducts (order_id, product_id);
