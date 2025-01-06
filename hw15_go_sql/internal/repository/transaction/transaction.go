@@ -4,23 +4,27 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"hw15_go_sql/internal/repository/online_shop"
+	"hw15_go_sql/internal/repository/online_shop" //nolint
 	"log"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/pgxpool" //nolint
 )
 
 func CreateOrderByUsernameProductnameAndQuantity(
-	ctx context.Context, db *pgxpool.Pool, dbConn *online_shop.Queries, username, productname string, quantity pgtype.Numeric,
+	ctx context.Context,
+	db *pgxpool.Pool,
+	dbConn *online_shop.Queries,
+	username, productname string,
+	quantity pgtype.Numeric,
 ) error {
 	tx, err := db.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead})
 	if err != nil {
 		return fmt.Errorf("error creating tx: %w", err)
 	}
 	defer func() {
-		if err := tx.Rollback(ctx); err != nil {
+		if err = tx.Rollback(ctx); err != nil {
 			log.Printf("error rollback tx: %v", err)
 		}
 	}()
