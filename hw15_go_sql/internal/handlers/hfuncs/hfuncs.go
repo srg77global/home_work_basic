@@ -4,13 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"hw15_go_sql/pkg/pgdb" //nolint
 	"log"
 	"net/http"
 	"os"
 
+	"hw15_go_sql/pkg/pgdb"
+
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/joho/godotenv" //nolint
+	"github.com/joho/godotenv"
 )
 
 type NameStr struct {
