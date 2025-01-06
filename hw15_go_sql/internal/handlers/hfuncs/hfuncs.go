@@ -13,6 +13,7 @@ import (
 	"github.com/joho/godotenv" //nolint
 )
 
+// struct for decoding
 type NameStr struct {
 	Name string `db:"name" json:"name"`
 }
