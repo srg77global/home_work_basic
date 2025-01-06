@@ -2,7 +2,7 @@ module hw15_go_sql
 
 // github.com/srg77global/home_work_basic/hw15_go_sql
 
-go 1.20 //nolint
+go 1.21
 
 require (
 	github.com/jackc/pgx v3.6.2+incompatible
