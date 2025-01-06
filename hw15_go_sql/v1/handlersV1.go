@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"os"
 
-	_ "github.com/jackc/pgx/stdlib"
+	_ "github.com/jackc/pgx/stdlib" // driver
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/joho/godotenv"
 )
@@ -82,7 +82,7 @@ func HandleGetUsersByUsernameV1(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	type data = struct {
-		Id       pgtype.UUID `db:"id" json:"id"`
+		ID       pgtype.UUID `db:"id" json:"id"`
 		Name     string      `db:"name" json:"name"`
 		Email    string      `db:"email" json:"email"`
 		Password string      `db:"password" json:"password"`
@@ -91,7 +91,7 @@ func HandleGetUsersByUsernameV1(w http.ResponseWriter, r *http.Request) {
 	dataRows := data{}
 
 	for rows.Next() {
-		if err := rows.Scan(&dataRows.Id, &dataRows.Name, &dataRows.Email, &dataRows.Password); err != nil {
+		if err = rows.Scan(&dataRows.ID, &dataRows.Name, &dataRows.Email, &dataRows.Password); err != nil {
 			log.Printf("error rows scanning: %v\n", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -100,7 +100,7 @@ func HandleGetUsersByUsernameV1(w http.ResponseWriter, r *http.Request) {
 		dataSlice = append(dataSlice, dataRows)
 	}
 
-	if err := rows.Err(); err != nil {
+	if err = rows.Err(); err != nil {
 		log.Printf("error getting rows: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
