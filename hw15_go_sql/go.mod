@@ -4,8 +4,6 @@ module hw15_go_sql
 
 go 1.20
 
-toolchain go1.23.4
-
 require (
 	github.com/jackc/pgx v3.6.2+incompatible
 	github.com/jackc/pgx/v5 v5.7.2
