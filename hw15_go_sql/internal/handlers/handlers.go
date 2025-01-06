@@ -1,14 +1,14 @@
 package handlers
 
 import (
-	"encoding/json" //nolint
-	"hw15_go_sql/internal/handlers/hfuncs"
-	"hw15_go_sql/internal/repository/online_shop"
-	"hw15_go_sql/internal/repository/transaction"
-	"log" //nolint
+	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgtype"
+	"hw15_go_sql/internal/handlers/hfuncs"
+	"hw15_go_sql/internal/repository/online_shop"
+	"hw15_go_sql/internal/repository/transaction"
 )
 
 type txSucceedT struct{ Tx string }

@@ -8,10 +8,9 @@ import (
 	"net/http"
 	"os"
 
-	"hw15_go_sql/pkg/pgdb"
-
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
+	"hw15_go_sql/pkg/pgdb"
 )
 
 type NameStr struct {
