@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"encoding/json" //nolint
+	"encoding/json"
 	"hw15_go_sql/internal/handlers/hfuncs"
 	"hw15_go_sql/internal/repository/online_shop"
 	"hw15_go_sql/internal/repository/transaction"
-	"log" //nolint
+	"log"
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgtype"
