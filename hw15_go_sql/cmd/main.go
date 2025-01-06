@@ -1,10 +1,10 @@
 package main
 
 import (
-	"flag"
+	"flag" //nolint
 	"hw15_go_sql/internal/handlers"
 	v1 "hw15_go_sql/v1"
-	"log"
+	"log" //nolint
 	"net/http"
 )
 
