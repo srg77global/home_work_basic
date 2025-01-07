@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"hw15_go_sql/internal/repository/online_shop" //nolint
 	"log"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/jackc/pgx/v5/pgxpool" //nolint
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/srg77global/home_work_basic/hw15_go_sql/internal/repository/online_shop"
 )
 
 func CreateOrderByUsernameProductnameAndQuantity(

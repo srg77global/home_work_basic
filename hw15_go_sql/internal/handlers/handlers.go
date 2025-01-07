@@ -6,9 +6,9 @@ import (
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"hw15_go_sql/internal/handlers/hfuncs"
-	"hw15_go_sql/internal/repository/online_shop"
-	"hw15_go_sql/internal/repository/transaction"
+	"github.com/srg77global/home_work_basic/hw15_go_sql/internal/handlers/hfuncs"
+	"github.com/srg77global/home_work_basic/hw15_go_sql/internal/repository/online_shop"
+	"github.com/srg77global/home_work_basic/hw15_go_sql/internal/repository/transaction"
 )
 
 type txSucceedT struct{ Tx string }

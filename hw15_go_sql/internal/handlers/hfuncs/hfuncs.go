@@ -10,7 +10,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
-	"hw15_go_sql/pkg/pgdb"
+	"github.com/srg77global/home_work_basic/hw15_go_sql/pkg/pgdb"
 )
 
 type NameStr struct {
