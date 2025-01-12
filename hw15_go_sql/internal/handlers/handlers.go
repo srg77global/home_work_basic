@@ -1,11 +1,14 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/srg77global/home_work_basic/hw15_go_sql/internal/handlers/hfuncs"
 	"github.com/srg77global/home_work_basic/hw15_go_sql/internal/repository/online_shop"
 	"github.com/srg77global/home_work_basic/hw15_go_sql/internal/repository/transaction"
@@ -23,25 +26,33 @@ func (u *txSucceedT) String() string {
 	return string(uMarshalled)
 }
 
-func HandleGetUsersByUsername(w http.ResponseWriter, r *http.Request) {
-	ctx, db, err := hfuncs.HeadHandler(w, r, http.MethodGet)
-	if err != nil {
-		log.Printf("error function HeadHandler: %v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+type APIHandler struct {
+	db  *pgxpool.Pool
+	ctx context.Context
+}
+
+func NewAPIHandler(ctx context.Context, db *pgxpool.Pool) (*APIHandler, error) {
+	h := APIHandler{db: db}
+	if db != h.db {
+		return nil, errors.New("error creating APIHandler struct")
 	}
-	defer db.Close()
-	repoOnlineShop := online_shop.New(db)
+	h.ctx = ctx
+	return &h, nil
+}
+
+func (h *APIHandler) HandleGetUsersByUsername(w http.ResponseWriter, r *http.Request) {
+	log.Printf("new request: %+v\n", r)
+	repoOnlineShop := online_shop.New(h.db)
 
 	names := online_shop.SelectTwoUsersByUsernameParams{}
-	err = json.NewDecoder(r.Body).Decode(&names)
+	err := json.NewDecoder(r.Body).Decode(&names)
 	if err != nil {
 		log.Printf("error decoding: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	data, err := repoOnlineShop.SelectTwoUsersByUsername(ctx, names)
+	data, err := repoOnlineShop.SelectTwoUsersByUsername(h.ctx, names)
 	if err != nil {
 		log.Println("error function SelectTwoUsersByUsername: ", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -49,20 +60,14 @@ func HandleGetUsersByUsername(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("%+v\n", data)
-	hfuncs.EndHandler(w, data)
+	hfuncs.Response(w, data)
 }
 
-func HandleGetUsersByOrders(w http.ResponseWriter, r *http.Request) {
-	ctx, db, err := hfuncs.HeadHandler(w, r, http.MethodGet)
-	if err != nil {
-		log.Printf("error function HeadHandler: %v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	defer db.Close()
-	repoOnlineShop := online_shop.New(db)
+func (h *APIHandler) HandleGetUsersByOrders(w http.ResponseWriter, r *http.Request) {
+	log.Printf("new request: %+v\n", r)
+	repoOnlineShop := online_shop.New(h.db)
 
-	data, err := repoOnlineShop.SelectUsersByOrders(ctx)
+	data, err := repoOnlineShop.SelectUsersByOrders(h.ctx)
 	if err != nil {
 		log.Println("error function SelectUsersByOrders: ", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -70,28 +75,22 @@ func HandleGetUsersByOrders(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("%+v\n", data)
-	hfuncs.EndHandler(w, data)
+	hfuncs.Response(w, data)
 }
 
-func HandleGetProducts(w http.ResponseWriter, r *http.Request) {
-	ctx, db, err := hfuncs.HeadHandler(w, r, http.MethodGet)
-	if err != nil {
-		log.Printf("error function HeadHandler: %v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	defer db.Close()
-	repoOnlineShop := online_shop.New(db)
+func (h *APIHandler) HandleGetProducts(w http.ResponseWriter, r *http.Request) {
+	log.Printf("new request: %+v\n", r)
+	repoOnlineShop := online_shop.New(h.db)
 
 	prices := online_shop.SelectProductsByPricesParams{}
-	err = json.NewDecoder(r.Body).Decode(&prices)
+	err := json.NewDecoder(r.Body).Decode(&prices)
 	if err != nil {
 		log.Printf("error decoding: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	data, err := repoOnlineShop.SelectProductsByPrices(ctx, prices)
+	data, err := repoOnlineShop.SelectProductsByPrices(h.ctx, prices)
 	if err != nil {
 		log.Println("error function SelectProductsByPrices: ", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -99,18 +98,12 @@ func HandleGetProducts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("%+v\n", data)
-	hfuncs.EndHandler(w, data)
+	hfuncs.Response(w, data)
 }
 
-func HandleGetOrder(w http.ResponseWriter, r *http.Request) {
-	ctx, db, err := hfuncs.HeadHandler(w, r, http.MethodGet)
-	if err != nil {
-		log.Printf("error function HeadHandler: %v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	defer db.Close()
-	repoOnlineShop := online_shop.New(db)
+func (h *APIHandler) HandleGetOrder(w http.ResponseWriter, r *http.Request) {
+	log.Printf("new request: %+v\n", r)
+	repoOnlineShop := online_shop.New(h.db)
 
 	nameD, err := hfuncs.DecodeStr(w, r)
 	if err != nil {
@@ -119,7 +112,7 @@ func HandleGetOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err := repoOnlineShop.SelectOrdersByUsername(ctx, nameD.Name)
+	data, err := repoOnlineShop.SelectOrdersByUsername(h.ctx, nameD.Name)
 	if err != nil {
 		log.Println("error function SelectOrdersByUsername: ", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -127,28 +120,22 @@ func HandleGetOrder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("%+v\n", data)
-	hfuncs.EndHandler(w, data)
+	hfuncs.Response(w, data)
 }
 
-func HandlePostUser(w http.ResponseWriter, r *http.Request) {
-	ctx, db, err := hfuncs.HeadHandler(w, r, http.MethodPost)
-	if err != nil {
-		log.Printf("error function HeadHandler: %v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	defer db.Close()
-	repoOnlineShop := online_shop.New(db)
+func (h *APIHandler) HandlePostUser(w http.ResponseWriter, r *http.Request) {
+	log.Printf("new request: %+v\n", r)
+	repoOnlineShop := online_shop.New(h.db)
 
 	dataS := online_shop.InsertUserParams{}
-	err = json.NewDecoder(r.Body).Decode(&dataS)
+	err := json.NewDecoder(r.Body).Decode(&dataS)
 	if err != nil {
 		log.Printf("error decoding: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	data, err := repoOnlineShop.InsertUser(ctx, dataS)
+	data, err := repoOnlineShop.InsertUser(h.ctx, dataS)
 	if err != nil {
 		log.Println("error function InsertUser: ", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -156,28 +143,22 @@ func HandlePostUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("%+v\n", data)
-	hfuncs.EndHandler(w, data)
+	hfuncs.Response(w, data)
 }
 
-func HandlePostProduct(w http.ResponseWriter, r *http.Request) {
-	ctx, db, err := hfuncs.HeadHandler(w, r, http.MethodPost)
-	if err != nil {
-		log.Printf("error function HeadHandler: %v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	defer db.Close()
-	repoOnlineShop := online_shop.New(db)
+func (h *APIHandler) HandlePostProduct(w http.ResponseWriter, r *http.Request) {
+	log.Printf("new request: %+v\n", r)
+	repoOnlineShop := online_shop.New(h.db)
 
 	dataS := online_shop.InsertProductParams{}
-	err = json.NewDecoder(r.Body).Decode(&dataS)
+	err := json.NewDecoder(r.Body).Decode(&dataS)
 	if err != nil {
 		log.Printf("error decoding: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	data, err := repoOnlineShop.InsertProduct(ctx, dataS)
+	data, err := repoOnlineShop.InsertProduct(h.ctx, dataS)
 	if err != nil {
 		log.Println("error function InsertProduct: ", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -185,18 +166,12 @@ func HandlePostProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("%+v\n", data)
-	hfuncs.EndHandler(w, data)
+	hfuncs.Response(w, data)
 }
 
-func HandlePostOrder(w http.ResponseWriter, r *http.Request) {
-	ctx, db, err := hfuncs.HeadHandler(w, r, http.MethodPost)
-	if err != nil {
-		log.Printf("error function HeadHandler: %v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	defer db.Close()
-	repoOnlineShop := online_shop.New(db)
+func (h *APIHandler) HandlePostOrder(w http.ResponseWriter, r *http.Request) {
+	log.Printf("new request: %+v\n", r)
+	repoOnlineShop := online_shop.New(h.db)
 
 	createOrderJSON := struct {
 		Username    string         `db:"username" json:"username"`
@@ -211,7 +186,7 @@ func HandlePostOrder(w http.ResponseWriter, r *http.Request) {
 		Username:    &createOrderJSON.Username,
 		Productname: &createOrderJSON.Productname,
 	}
-	err = json.NewDecoder(r.Body).Decode(&createOrderJSON)
+	err := json.NewDecoder(r.Body).Decode(&createOrderJSON)
 	if err != nil {
 		log.Printf("error decoding: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -219,7 +194,7 @@ func HandlePostOrder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = transaction.CreateOrderByUsernameProductnameAndQuantity(
-		ctx, db, repoOnlineShop, *createOrder.Username, *createOrder.Productname, createOrderJSON.Quantity,
+		h.ctx, h.db, repoOnlineShop, *createOrder.Username, *createOrder.Productname, createOrderJSON.Quantity,
 	)
 	if err != nil {
 		log.Println("error function CreateOrderByUsernameProductnameAndQuantity: ", err)
@@ -227,42 +202,23 @@ func HandlePostOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println(txSucceed)
-
-	body, err := json.Marshal(txSucceed.String())
-	if err != nil {
-		log.Println("error marshalling: ", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	_, err = w.Write(body)
-	if err != nil {
-		log.Println("error write to header: ", err)
-	}
+	log.Printf("%+v\n", txSucceed.String())
+	hfuncs.Response(w, txSucceed.String())
 }
 
-func HandlePutUsername(w http.ResponseWriter, r *http.Request) {
-	ctx, db, err := hfuncs.HeadHandler(w, r, http.MethodPut)
-	if err != nil {
-		log.Printf("error function HeadHandler: %v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	defer db.Close()
-	repoOnlineShop := online_shop.New(db)
+func (h *APIHandler) HandlePutUsername(w http.ResponseWriter, r *http.Request) {
+	log.Printf("new request: %+v\n", r)
+	repoOnlineShop := online_shop.New(h.db)
 
 	dataS := online_shop.UpdateUsernameByNameParams{}
-	err = json.NewDecoder(r.Body).Decode(&dataS)
+	err := json.NewDecoder(r.Body).Decode(&dataS)
 	if err != nil {
 		log.Printf("error decoding: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	data, err := repoOnlineShop.UpdateUsernameByName(ctx, dataS)
+	data, err := repoOnlineShop.UpdateUsernameByName(h.ctx, dataS)
 	if err != nil {
 		log.Println("error function UpdateUsernameByName: ", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -270,28 +226,22 @@ func HandlePutUsername(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("%+v\n", data)
-	hfuncs.EndHandler(w, data)
+	hfuncs.Response(w, data)
 }
 
-func HandlePutProductprice(w http.ResponseWriter, r *http.Request) {
-	ctx, db, err := hfuncs.HeadHandler(w, r, http.MethodPut)
-	if err != nil {
-		log.Printf("error function HeadHandler: %v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	defer db.Close()
-	repoOnlineShop := online_shop.New(db)
+func (h *APIHandler) HandlePutProductprice(w http.ResponseWriter, r *http.Request) {
+	log.Printf("new request: %+v\n", r)
+	repoOnlineShop := online_shop.New(h.db)
 
 	dataS := online_shop.UpdateProductpriceByNameParams{}
-	err = json.NewDecoder(r.Body).Decode(&dataS)
+	err := json.NewDecoder(r.Body).Decode(&dataS)
 	if err != nil {
 		log.Printf("error decoding: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	data, err := repoOnlineShop.UpdateProductpriceByName(ctx, dataS)
+	data, err := repoOnlineShop.UpdateProductpriceByName(h.ctx, dataS)
 	if err != nil {
 		log.Println("error function UpdateProductpriceByName: ", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -299,18 +249,12 @@ func HandlePutProductprice(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("%+v\n", data)
-	hfuncs.EndHandler(w, data)
+	hfuncs.Response(w, data)
 }
 
-func HandleDeleteUser(w http.ResponseWriter, r *http.Request) {
-	ctx, db, err := hfuncs.HeadHandler(w, r, http.MethodDelete)
-	if err != nil {
-		log.Printf("error function HeadHandler: %v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	defer db.Close()
-	repoOnlineShop := online_shop.New(db)
+func (h *APIHandler) HandleDeleteUser(w http.ResponseWriter, r *http.Request) {
+	log.Printf("new request: %+v\n", r)
+	repoOnlineShop := online_shop.New(h.db)
 
 	nameD, err := hfuncs.DecodeStr(w, r)
 	if err != nil {
@@ -319,7 +263,7 @@ func HandleDeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err := repoOnlineShop.DeleteUserByName(ctx, nameD.Name)
+	data, err := repoOnlineShop.DeleteUserByName(h.ctx, nameD.Name)
 	if err != nil {
 		log.Println("error function DeleteUserByName: ", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -327,18 +271,12 @@ func HandleDeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("%+v\n", data)
-	hfuncs.EndHandler(w, data)
+	hfuncs.Response(w, data)
 }
 
-func HandleDeleteProduct(w http.ResponseWriter, r *http.Request) {
-	ctx, db, err := hfuncs.HeadHandler(w, r, http.MethodDelete)
-	if err != nil {
-		log.Printf("error function HeadHandler: %v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	defer db.Close()
-	repoOnlineShop := online_shop.New(db)
+func (h *APIHandler) HandleDeleteProduct(w http.ResponseWriter, r *http.Request) {
+	log.Printf("new request: %+v\n", r)
+	repoOnlineShop := online_shop.New(h.db)
 
 	nameD, err := hfuncs.DecodeStr(w, r)
 	if err != nil {
@@ -347,7 +285,7 @@ func HandleDeleteProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err := repoOnlineShop.DeleteProductByName(ctx, nameD.Name)
+	data, err := repoOnlineShop.DeleteProductByName(h.ctx, nameD.Name)
 	if err != nil {
 		log.Println("error function DeleteProductByName: ", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -355,18 +293,12 @@ func HandleDeleteProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("%+v\n", data)
-	hfuncs.EndHandler(w, data)
+	hfuncs.Response(w, data)
 }
 
-func HandleDeleteOrder(w http.ResponseWriter, r *http.Request) {
-	ctx, db, err := hfuncs.HeadHandler(w, r, http.MethodDelete)
-	if err != nil {
-		log.Printf("error function HeadHandler: %v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	defer db.Close()
-	repoOnlineShop := online_shop.New(db)
+func (h *APIHandler) HandleDeleteOrder(w http.ResponseWriter, r *http.Request) {
+	log.Printf("new request: %+v\n", r)
+	repoOnlineShop := online_shop.New(h.db)
 
 	nameD, err := hfuncs.DecodeStr(w, r)
 	if err != nil {
@@ -375,7 +307,7 @@ func HandleDeleteOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err := repoOnlineShop.DeleteOrderByUsername(ctx, nameD.Name)
+	data, err := repoOnlineShop.DeleteOrderByUsername(h.ctx, nameD.Name)
 	if err != nil {
 		log.Println("error function DeleteOrderByUsername: ", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -383,5 +315,5 @@ func HandleDeleteOrder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("%+v\n", data)
-	hfuncs.EndHandler(w, data)
+	hfuncs.Response(w, data)
 }

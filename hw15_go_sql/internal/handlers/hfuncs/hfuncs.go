@@ -1,48 +1,16 @@
 package hfuncs
 
 import (
-	"context"
 	"encoding/json"
-	"errors"
 	"log"
 	"net/http"
-	"os"
-
-	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/joho/godotenv"
-	"github.com/srg77global/home_work_basic/hw15_go_sql/pkg/pgdb"
 )
 
 type NameStr struct {
 	Name string `db:"name" json:"name"`
 }
 
-func HeadHandler(w http.ResponseWriter, r *http.Request, method string) (context.Context, *pgxpool.Pool, error) {
-	if r.Method != method {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return nil, nil, errors.New("incorrect method")
-	}
-
-	log.Printf("Method: %v\n", r.Method)
-
-	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found")
-	}
-	ctx := context.Background()
-	dbDSN, exists := os.LookupEnv("DB_DSN")
-	if exists {
-		log.Println("DSN: ", dbDSN)
-	}
-
-	db, err := pgdb.New(ctx, dbDSN, 1)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return nil, nil, err
-	}
-	return ctx, db, nil
-}
-
-func EndHandler(w http.ResponseWriter, data any) {
+func Response(w http.ResponseWriter, data any) {
 	body, err := json.Marshal(data)
 	if err != nil {
 		log.Println("error marshalling: ", err)

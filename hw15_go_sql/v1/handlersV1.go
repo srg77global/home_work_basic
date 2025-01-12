@@ -39,12 +39,7 @@ func NewConnDB(ctx context.Context) (*sql.DB, error) {
 }
 
 func HandleGetUsersByUsernameV1(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		log.Println("incorrect method")
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
-	}
-	log.Printf("Method: %v\n", r.Method)
+	log.Printf("Method: %+v\n", r)
 
 	ctx := context.Background()
 
