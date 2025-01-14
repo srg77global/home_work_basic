@@ -32,7 +32,7 @@ func TestInput(t *testing.T) {
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
 			cInput := make(chan int, 100)
-			Input := ConstrInput(time.Second)
+			Input := ReadSens(time.Second)
 			Input(cInput, tC.data)
 			require.Equal(t, tC.res, <-cInput)
 		})
@@ -70,14 +70,13 @@ func TestOutput(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			chInput := make(chan int, 100)
 			chOutput := make(chan int, 100)
-			chStop := make(chan struct{}, 1)
 
 			for _, nums := range tC.data {
 				chInput <- nums
 			}
 			close(chInput)
 
-			Output(chInput, chOutput, chStop)
+			Output(chInput, chOutput)
 			res := <-chOutput
 			require.Equal(t, tC.exp, res)
 		})

@@ -5,15 +5,16 @@ import (
 	"time"
 )
 
-func ConstrInput(clock time.Duration) func(cInput chan<- int, data int) {
+func ReadSens(clock time.Duration) func(cInput chan<- int, data int) {
 	return func(cInput chan<- int, data int) {
 		timeout := time.After(clock)
+
 		for {
 			select {
 			case cInput <- data:
-				fmt.Println("[goroutine 1] first case executed")
+				fmt.Println("[goroutine 1]: data sent")
 			case <-timeout:
-				fmt.Println("[goroutine 1] second case executed")
+				fmt.Println("[goroutine 1]: timeout")
 				close(cInput)
 				return
 			}
@@ -21,52 +22,43 @@ func ConstrInput(clock time.Duration) func(cInput chan<- int, data int) {
 	}
 }
 
-func Output(cInput <-chan int, cOutput chan<- int, cStop chan<- struct{}) {
-	var (
-		val       int
-		dataSlice []int
-	)
+func Output(cInput <-chan int, cOutput chan<- int) {
+	val := 0
+	dataSlice := []int{}
 
-	for {
-		if data, ok := <-cInput; ok {
-			fmt.Println("[goroutine 2] first case executed")
-			dataSlice = append(dataSlice, data)
-			if len(dataSlice) == 10 {
-				for _, valS := range dataSlice {
-					val += valS
-				}
-				cOutput <- val / 10
-				val = 0
-				dataSlice = []int{}
+	for valS1 := range cInput {
+		dataSlice = append(dataSlice, valS1)
+		fmt.Println("[goroutine 2]: for range executed")
+
+		if len(dataSlice) == 10 {
+			for _, valS2 := range dataSlice {
+				val += valS2
 			}
-		} else {
-			fmt.Println("[goroutine 2] second case executed")
-			cStop <- struct{}{}
-			return
+
+			cOutput <- (val / 10)
+			val = 0
+			dataSlice = []int{}
 		}
 	}
+
+	fmt.Println("[goroutine 2]: finished")
+	close(cOutput)
 }
 
 func main() {
 	cInput := make(chan int, 100)
 	cOutput := make(chan int, 100)
-	cStop := make(chan struct{})
 	dataV := 523
+	fmt.Println("[main]: variables created")
 
-	fmt.Println("[main] variables created")
-
-	Input := ConstrInput(time.Minute)
+	Input := ReadSens(130 * time.Microsecond)
 
 	go Input(cInput, dataV)
-	go Output(cInput, cOutput, cStop)
+	go Output(cInput, cOutput)
 
-	for {
-		select {
-		case dataOutput := <-cOutput:
-			fmt.Println(dataOutput)
-		case <-cStop:
-			fmt.Println("[main] return")
-			return
-		}
+	for dataOutput := range cOutput {
+		fmt.Println(dataOutput)
 	}
+
+	fmt.Println("[main]: finished")
 }

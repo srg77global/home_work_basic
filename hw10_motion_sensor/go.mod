@@ -1,6 +1,6 @@
 module github.com/srg77global/home_work_basic/hw10_motion_sensor
 
-go 1.20
+go 1.23
 
 require github.com/stretchr/testify v1.9.0
 
