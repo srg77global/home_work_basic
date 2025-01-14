@@ -51,7 +51,7 @@ func main() {
 	dataV := 523
 	fmt.Println("[main]: variables created")
 
-	Input := ReadSens(130 * time.Microsecond)
+	Input := ReadSens(time.Minute)
 
 	go Input(cInput, dataV)
 	go Output(cInput, cOutput)
