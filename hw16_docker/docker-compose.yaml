@@ -1,0 +1,30 @@
+services:
+  hw-app:
+    build: ./
+    command: ./hw16_docker
+    depends_on: 
+      - pg-storage
+    environment:
+      APP_DB_DATABASE: storage
+      APP_DB_HOST: pg-storage
+      APP_DB_PASSWORD: developer
+      APP_DB_PORT: 8088
+      APP_DB_USER: postgres
+      APP_DB_SEARCH_PATH: online_shop
+      DB_DSN: postgres://postgres:developer@0.0.0.0:65431/storage?sslmode=disable&search_path=online_shop
+      MIGRATION_DIR: ./sql/migrations
+      MIGRATION_DSN: postgres://postgres:developer@0.0.0.0:65431/storage?sslmode=disable&search_path=online_shop
+
+  pg-storage:
+      restart: always
+      image: postgres:16.2-alpine
+      container_name: pg-storage
+      environment:
+          POSTGRES_DB: storage
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: developer
+          PGDATA: "/var/lib/postgresql/data/pgdata"
+      volumes:
+        - ./hw15_go_sql/localdata/pg-storage:/var/lib/postgresql/data
+      ports:
+        - 65431:5432
